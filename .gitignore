@@ -1,0 +1,5 @@
+# ignore byte-compiled python files
+*.pyc
+
+# ignore test data as this can become quite large.
+test/data
