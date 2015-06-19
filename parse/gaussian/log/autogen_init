@@ -1,0 +1,10 @@
+#!/bin/bash
+
+[ -f __init__.py ] && mv __init__.py{,.bkp}
+
+for file in [^_]*.py ; do
+    cat $file | \
+        egrep '^def get_' | \
+        sed -E "s/def /from .${file%.py} import /;s/\(.*//" >> __init__.py
+done
+

@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# backup any existing __init__.py file
+[ -f "__init__.py" ] && mv __init__.py{,.bkp}
+> __init__.py
+
+for entry in `ls` ; do
+    [ ! -d "$entry" ] && continue
+    [ ! -f "$entry/__init__.py" ] && continue
+    # what directory are we processing?
+    echo "# $entry" >> __init__.py
+    # add each function imported in the __init__.py from
+    # that directory into this level
+    cat "$entry/__init__.py" | \
+    while read line ; do
+        words=($line)
+        fnctn="${words[$((${#words[@]} - 1))]}"
+        echo "from $entry import $fnctn" >> __init__.py
+    done
+done
+

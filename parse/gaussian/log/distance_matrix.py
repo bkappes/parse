@@ -1,4 +1,3 @@
-from __future__ import print_function
 from ...core.extractors import RegexRangeExtractor
 import numpy as np
 
@@ -32,7 +31,7 @@ def get_distance_matrix(filename, aslist=True):
 
         Returns
         -------
-        tuple, (distance matrix as np.ndarray, list of symbols)
+        distance matrix as np.ndarray
         """
         def not_header(field):
             # At a minimum, data rows have fields
@@ -47,15 +46,12 @@ def get_distance_matrix(filename, aslist=True):
             else:
                 return False
         distances = []
-        symbols = []
         for line in matrix.strip().split('\n'):
             words = line.split()
             # get index information from row/column labels
             if not_header(words):
                 # row index: 1 indexed --> 0 indexed
                 row = int(words[0])-1
-                # element symbol
-                sym = words[1]
                 # distances
                 dist = map(float, words[2:])
             else:
@@ -65,7 +61,6 @@ def get_distance_matrix(filename, aslist=True):
             # read values into lower triangular matrix
             if len(distances) <= row:
                 distances.append(dist)
-                symbols.append(sym)
             else:
                 distances[row].extend(dist)
         # populate matrix upper triangle
@@ -75,7 +70,7 @@ def get_distance_matrix(filename, aslist=True):
             distances[i].extend((N-m)*[0.0])
         distances = np.array(distances)
         distances = distances + distances.transpose()
-        return (distances, symbols)
+        return distances
     # --------- end helper functions --------- #
 
     # open the file, if a string
@@ -86,30 +81,16 @@ def get_distance_matrix(filename, aslist=True):
     # extract distance matrices
     start = r'^\s*Distance'
     stop = r'^\s*[a-zA-Z]'
-    rre = RegexRangeExtractor(start, stop)
-    matrices = rre(ifs,
-                   include_start=False,
-                   include_stop=False)
+    rre = RegexRangeExtractor(start, stop,
+                              include_start=False,
+                              include_stop=False)
+    blocks = rre(ifs)
     # close file
     if ifs is not filename:
         ifs.close()
     # convert the matrices
-    distances = []
-    symbols = []
-    for m in matrices:
-        dist, sym = parse_matrix(m)
-        distances.append(dist)
-        if not symbols:
-            symbols = sym
-        else:
-            if len(symbols) != len(sym):
-                raise IOError("Found a change in the number of atoms " \
-                              "while reading distance matrices.")
-            mismatched = [(s1, s2) for s1, s2 in zip(symbols, sym) if s1 != s2]
-            if mismatched:
-                raise IOError("Found mismatched atoms while " \
-                              "reading distance matrices: {}".format(mismatched))
+    distances = [parse_matrix(b) for b in blocks]
     # return as list or single ndarray?
     if (not aslist) and (len(distances) == 1):
-            distances = distances[0]
-    return (distances, symbols)
+        distances = distances[0]
+    return distances
