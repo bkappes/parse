@@ -2,6 +2,7 @@
 from log import get_apt_charges
 from log import get_atom_count
 from log import get_atom_positions
+from log import get_atomic_numbers
 from log import get_cavity_surface_area
 from log import get_cavity_volume
 from log import get_dipole

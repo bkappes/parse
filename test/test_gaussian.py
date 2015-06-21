@@ -7,6 +7,7 @@ import numpy as np
 from parse.gaussian import get_apt_charges
 from parse.gaussian import get_atom_count
 from parse.gaussian import get_atom_positions
+from parse.gaussian import get_atomic_numbers
 from parse.gaussian import get_cavity_surface_area
 from parse.gaussian import get_cavity_volume
 from parse.gaussian import get_dipole
@@ -104,6 +105,15 @@ class TestClass: # keep this the same
         z = z.astype(float)
         m = np.transpose([x, y, z])
         assert(np.allclose(values[0], m))
+
+    def test_get_atomic_numbers(self):
+        values = get_atomic_numbers(TestClass.sfs)
+        num = np.loadtxt('data/atomic_numbers.txt')
+        try:
+            assert(np.all(values == num))
+        except:
+            print("{}/{}".format(values, num))
+            raise
 
     def test_get_cavity_surface_area(self):
         values = get_cavity_surface_area(TestClass.sfs)

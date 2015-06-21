@@ -123,6 +123,8 @@ class RegexRangeExtractor(Extractor):
                         s += line
                     matches.append(s)
                     inblock = False
+                    # reset skip
+                    skip = self.skip
                 else:
                     s += line
         # was the EOF reached in the middle of a block?

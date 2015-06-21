@@ -26,7 +26,7 @@ def get_data(filename):
     rre = RegexExtractor(regex)
     lines = rre(ifs)
     # close file
-    if ifs is not filename():
+    if ifs is not filename:
         ifs.close()
     # parse data
     #+ single value/file

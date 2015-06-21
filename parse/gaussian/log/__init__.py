@@ -1,5 +1,6 @@
 from .apt_charges import get_apt_charges
 from .atom_count import get_atom_count
+from .atomic_numbers import get_atomic_numbers
 from .atom_positions import get_atom_positions
 from .cavity_surface_area import get_cavity_surface_area
 from .cavity_volume import get_cavity_volume
